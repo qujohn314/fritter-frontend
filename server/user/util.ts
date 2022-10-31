@@ -7,6 +7,9 @@ type UserResponse = {
   _id: string;
   username: string;
   dateJoined: string;
+  silentMode: boolean;
+  silentComments: boolean;
+  silentReactions: boolean;
 };
 
 /**
@@ -42,3 +45,4 @@ const constructUserResponse = (user: HydratedDocument<User>): UserResponse => {
 export {
   constructUserResponse
 };
+

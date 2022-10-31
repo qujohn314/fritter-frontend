@@ -52,6 +52,26 @@
       Posted at {{ freet.dateModified }}
       <i v-if="freet.edited">(edited)</i>
     </p>
+
+    <button>
+      👍
+    </button>
+    <button>
+      👎
+    </button>
+    <button>
+      😮
+    </button>
+    <button>
+      ❤️
+    </button>
+    <button>
+      😢
+    </button>
+    <button>
+      😡
+    </button>
+  
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"

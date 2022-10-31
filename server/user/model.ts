@@ -12,6 +12,9 @@ export type User = {
   username: string;
   password: string;
   dateJoined: Date;
+  silentMode: boolean;
+  silentComments: boolean;
+  silentReactions: boolean;
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -32,7 +35,20 @@ const UserSchema = new Schema({
   dateJoined: {
     type: Date,
     required: true
-  }
+  },
+  silentMode: {
+    type: Boolean,
+    required: true
+  },
+  silentComments: {
+    type: Boolean,
+    required: true
+  },
+  silentReactions: {
+    type: Boolean,
+    required: true
+  },
+  
 });
 
 const UserModel = model<User>('User', UserSchema);

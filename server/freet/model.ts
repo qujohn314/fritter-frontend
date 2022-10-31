@@ -27,7 +27,7 @@ export type PopulatedFreet = {
 // Mongoose schema definition for interfacing with a MongoDB table
 // Freets stored in this table will have these fields, with the
 // type given by the type property, inside MongoDB
-const FreetSchema = new Schema<Freet>({
+export const FreetSchema = new Schema<Freet>({
   // The author userId
   authorId: {
     // Use Types.ObjectId outside of the schema

@@ -146,6 +146,78 @@ router.patch(
 );
 
 /**
+ * 
+ * @throws {403} - If user is not logged in
+ */
+ router.put(
+  '/silentMode/:silentMode',
+  [
+    userValidator.isUserLoggedIn,
+  ],
+  async (req: Request, res: Response) => {
+    console.log(req.body);
+    console.log(req.params);
+    const userId = (req.session.userId as string) ?? '';
+    let user = await UserCollection.findOneByUserId(userId);
+    const silentMode = req.params.silentMode === 'true';
+    console.log(silentMode);
+
+    user = await UserCollection.updateSilentMode(userId,silentMode)
+
+    res.status(200).json({
+      message: `Silent Mode successfully set to ${user.silentMode}`,
+      user: util.constructUserResponse(user)
+    });
+  }
+);
+
+/**
+ * 
+ * @throws {403} - If user is not logged in
+ */
+ router.put(
+  '/silentReactions/:silentReactions',
+  [
+    userValidator.isUserLoggedIn,
+  ],
+  async (req: Request, res: Response) => {
+    const userId = (req.session.userId as string) ?? '';
+    let user = await UserCollection.findOneByUserId(userId);
+    const silentReactions = req.params.silentReactions === 'true';
+
+    user = await UserCollection.updateSilentReactions(userId,silentReactions);
+    
+    res.status(200).json({
+      message: `Reactions for Silent Mode successfully set to ${user.silentReactions}`,
+      user: util.constructUserResponse(user)
+    });
+  }
+);
+
+/**
+ * 
+ * @throws {403} - If user is not logged in
+ */
+ router.put(
+  '/silentComments/:silentComments',
+  [
+    userValidator.isUserLoggedIn,
+  ],
+  async (req: Request, res: Response) => {
+    const userId = (req.session.userId as string) ?? '';
+    let user = await UserCollection.findOneByUserId(userId);
+    const silentComments = req.params.silentComments === 'true';
+
+    user = await UserCollection.updateSilentComments(userId,silentComments)
+    
+    res.status(200).json({
+      message: `Comments for Silent Mode successfully set to ${user.silentComments}`,
+      user: util.constructUserResponse(user)
+    });
+  }
+);
+
+/**
  * Delete a user.
  *
  * @name DELETE /api/users
