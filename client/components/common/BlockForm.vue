@@ -112,13 +112,12 @@ export default {
           this.$store.commit("refreshStream");
 
         }
-        console.log("Create Stream value" + this.createStream);
+        
         if (this.createStream) {
           const rr = await fetch('/api/streams', {method: 'POST',headers: {'Content-Type': 'application/json'},credentials: 'same-origin'});
           const text = await rr.text();
           const res = text ? JSON.parse(text) : {user: null};
-          console.log("STREAMM!!!");
-          console.log(res);
+   
           this.$store.commit('setStream', res);
 
         }

@@ -77,7 +77,6 @@ const store = new Vuex.Store({
       state.maxStreamSize = size;
     },
     setStream(state, stream) {
-      console.log("create stream");
       /**
        * Update the stored username to the specified one.
        * @param username - new username to set
@@ -99,7 +98,6 @@ const store = new Vuex.Store({
       state.filterReaction = filter;
     },
     updateFreets(state, freets) {
-      console.log('freets updated');
       /**
        * Update the stored freets to the provided freets.
        * @param freets - Freets to store
@@ -110,29 +108,23 @@ const store = new Vuex.Store({
       state.reactions = reactions;
     },
     updateComments(state, comments) {
-      console.log('comments updated');
 
       state.comments = comments;
     },
     async refreshAccount(state) {
-      console.log('account refreshed');
       /**
        * Request the server for the currently available freets.
        */
       const url = `/api/users/session`;
       const res = await fetch(url).then(async r => r.json());
-      console.log(res);
+    
       state.username = res.user.username;
       state.silentMode = res.user.silentMode;
       state.silentComments = res.user.silentComments;
       state.silentReactions = res.user.silentReactions;
 
-      console.log("Sm " + state.silentMode);
-      console.log("Sc " + state.silentComments);
-      console.log("Sr " + state.silentReactions);
     },
     async refreshFreets(state) {
-      console.log('freets refreshed');
       /**
        * Request the server for the currently available freets.
        */
@@ -144,7 +136,6 @@ const store = new Vuex.Store({
       /**
        * Request the server for the currently available reactions.
        */
-      console.log('refreshing reactions');
       const url = `/api/reactions`;
       const res = await fetch(url).then(async r => r.json());
       state.reactions = res;
@@ -153,7 +144,6 @@ const store = new Vuex.Store({
       /**
        * Request the server for the currently available comments.
        */
-      console.log('refreshing comments');
       const url = `/api/comments`;
       const res = await fetch(url).then(async r => r.json());
       state.comments = res;
@@ -162,13 +152,14 @@ const store = new Vuex.Store({
       /**
        * Request the server for the currently available comments.
        */
-      console.log('refreshing stream');
+
       const url2 = `/api/streams?ownerId=${state.username}`;
       const res2 = await fetch(url2).then(async r => r.json());
-      console.log(res2);
+
+      if(res2){
       state.stream = res2;
       state.maxStreamSize = state.stream.maxSize;
-      console.log(state.stream);
+      }
     }
   },
   // Store data across page refreshes, only discard on browser close

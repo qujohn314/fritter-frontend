@@ -59,8 +59,6 @@
         methods: {
             async captureFreet(child) {
                 const freet = child.freet;
-                console.log("child captured!");
-                console.log(freet);
 
                 const params = {
                         method: 'PUT',
@@ -68,7 +66,6 @@
                         freetId: freet._id
                         })
                     };
-                    console.log("capturing");
                     const options = {
                         method: params.method, headers: {'Content-Type': 'application/json'}
                     };
@@ -79,7 +76,6 @@
                             const res = await r.json();
                             throw new Error(res.error);
                         }
-                        console.log(r);
                         this.$store.commit('refreshStream');
                     }catch (e) {
                         console.log(e);
@@ -88,8 +84,6 @@
             },
             async releaseFreet(child) {
                 const freet = child.freet;
-                console.log("child released!");
-                console.log(freet);
 
                 const params = {
                         method: 'PUT',
@@ -97,7 +91,6 @@
                         freetId: freet._id
                         })
                     };
-                    console.log("releasing");
                     const options = {
                         method: params.method, headers: {'Content-Type': 'application/json'}
                     };
@@ -108,7 +101,6 @@
                             const res = await r.json();
                             throw new Error(res.error);
                         }
-                        console.log(r);
                         this.$store.commit('refreshStream');
                     }catch (e) {
                         console.log(e);
@@ -116,8 +108,6 @@
             },
             async removeFreet(child) {
                 const freet = child.freet;
-                console.log("child released!");
-                console.log(freet);
 
                 const params = {
                         method: 'DELETE',
@@ -125,7 +115,6 @@
                         freetId: freet._id
                         })
                     };
-                    console.log("deleting");
                     const options = {
                         method: params.method, headers: {'Content-Type': 'application/json'}
                     };
@@ -146,8 +135,6 @@
             async removeAllFreets() {
                 this.clearing = true;
                 for(const freet of this.stream.streamFreets){
-                    console.log("child released!");
-                    console.log(freet);
 
                     const params = {
                             method: 'DELETE',
@@ -155,7 +142,6 @@
                             freetId: freet._id
                             })
                         };
-                        console.log("deleting");
                         const options = {
                             method: params.method, headers: {'Content-Type': 'application/json'}
                         };
@@ -212,7 +198,6 @@
                         freetId: freet._id
                         })
                     };
-                    console.log("oops");
                     const options = {
                         method: params.method, headers: {'Content-Type': 'application/json'}
                     };
@@ -223,7 +208,6 @@
                             const res = await r.json();
                             throw new Error(res.error);
                         }
-                        console.log(r);
                         this.$store.commit('refreshStream');
                     }catch (e) {
                         continue;

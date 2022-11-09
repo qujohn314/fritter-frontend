@@ -156,15 +156,17 @@ export default {
     },
     async getAuthor(){
         const author = this.freet.authorId;
-        console.log("Getting author");
   
         try {
-          const r = await fetch(`/api/users/userId/?userId=${author}`).then(async r => r.json());
-          this.author = r.user.username;
+          if(author && author !== "undefined"){
+            const r = await fetch(`/api/users/userId/?userId=${author}`).then(async r => r.json());
+            if(r && r!=="undefined"){
+              this.author = r.user.username;
+            }
+          }
 
         } catch (e) {
-          this.$set(this.alerts, e, 'error');
-          setTimeout(() => this.$delete(this.alerts, e), 3000);
+          console.log(e);
         }
     },
     captureFreet(){
