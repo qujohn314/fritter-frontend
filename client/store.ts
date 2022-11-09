@@ -15,9 +15,9 @@ const store = new Vuex.Store({
     comments: [],
     reactions: [],
     username: null, // Username of the logged in user
-    silentMode: null,
-    silentReactions: null,
-    silentComments: null,
+    silentMode: false,
+    silentReactions: false,
+    silentComments: false,
     maxStreamSize: "10",
     stream: null,
     streamReactionFilter: null,

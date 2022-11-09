@@ -59,22 +59,23 @@
     <footer>~Disable Silent Mode to View Reactions~</footer>
   </section>
     <section
-        v-if="$store.state.comments.length && freetComments && freet && $store.state.silentComments == false"
+        v-if="$store.state.silentComments == false"
       >
         <div
         v-if="$store.state.username"
         >
           <CreateCommentForm
-            :parentFreetId="freet._id"
+            :parentFreetId="this.freet._id"
           />
         </div>
+        <section v-if="$store.state.comments.length && freetComments && freet">
         <CommentComponent
           v-for="commentSingle in freetComments"
           :key="commentSingle.id"
           :parentFreetInstance="freet"
           :comment="commentSingle"
         />
-
+        </section>
       </section>
     <section v-else>
         <footer>~Disable Silent Mode to View Comments~</footer>

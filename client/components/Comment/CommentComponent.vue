@@ -142,7 +142,7 @@ export default {
     border: 1px solid #264027;
     padding: 20px;
     position: relative;
-    background-color: #F9FAF7;
+    background-color: rgb(221, 235, 191);
 }
 
 .reaction {
