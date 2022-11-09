@@ -72,6 +72,8 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
 section {
   display: flex;
@@ -90,7 +92,7 @@ button {
 
 section .scrollbox {
   flex: 1 0 50vh;
-  padding: 3%;
+  padding: 4%;
   overflow-y: scroll;
 }
 </style>

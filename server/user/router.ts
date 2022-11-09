@@ -4,6 +4,9 @@ import FreetCollection from '../freet/collection';
 import UserCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
+import CommentCollection from '../comment/collection';
+import ReactionCollection from '../reaction/collection';
+import StreamCollection from '../stream/collection';
 
 const router = express.Router();
 
@@ -21,6 +24,27 @@ router.get(
   [],
   async (req: Request, res: Response) => {
     const user = await UserCollection.findOneByUserId(req.session.userId);
+    res.status(200).json({
+      message: 'Your session info was found successfully.',
+      user: user ? util.constructUserResponse(user) : null
+    });
+  }
+);
+
+/**
+ * Get the signed in user
+ * TODO: may need better route and documentation
+ * (so students don't accidentally delete this when copying over)
+ *
+ * @name GET /api/users/session
+ *
+ * @return - currently logged in user, or null if not logged in
+ */
+ router.get(
+  '/userId',
+  [],
+  async (req: Request, res: Response) => {
+    const user = await UserCollection.findOneByUserId(req.query.userId as string);
     res.status(200).json({
       message: 'Your session info was found successfully.',
       user: user ? util.constructUserResponse(user) : null
@@ -233,7 +257,10 @@ router.delete(
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     await UserCollection.deleteOne(userId);
-    await FreetCollection.deleteMany(userId);
+    await FreetCollection.deleteManyUser(userId);
+    await CommentCollection.deleteManyUser(userId);
+    await ReactionCollection.deleteManyUser(userId);
+    await StreamCollection.deleteOne(userId);
     req.session.userId = undefined;
     res.status(200).json({
       message: 'Your account has been deleted successfully.'

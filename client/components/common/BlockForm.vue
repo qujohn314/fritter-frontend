@@ -61,6 +61,8 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
+      setSilentSettings: false,
+      createStream: false,
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null // Function to run after successful form submission
     };
@@ -94,13 +96,37 @@ export default {
         }
 
         if (this.setUsername) {
+          
           const text = await r.text();
           const res = text ? JSON.parse(text) : {user: null};
           this.$store.commit('setUsername', res.user ? res.user.username : null);
+
+          if (this.setSilentSettings){
+            this.$store.commit('setSilentMode', res.user ? res.user.silentMode : null);
+            this.$store.commit('setSilentComments', res.user ? res.user.silentComments : null);
+            this.$store.commit('setSilentReactions', res.user ? res.user.silentReactions : null);
+
+            this.$store.commit('refreshAccount');
+          }
+
+          this.$store.commit("refreshStream");
+
+        }
+        console.log("Create Stream value" + this.createStream);
+        if (this.createStream) {
+          const rr = await fetch('/api/streams', {method: 'POST',headers: {'Content-Type': 'application/json'},credentials: 'same-origin'});
+          const text = await rr.text();
+          const res = text ? JSON.parse(text) : {user: null};
+          console.log("STREAMM!!!");
+          console.log(res);
+          this.$store.commit('setStream', res);
+
         }
 
         if (this.refreshFreets) {
           this.$store.commit('refreshFreets');
+          this.$store.commit('refreshComments');
+          this.$store.commit('refreshReactions');
         }
 
         if (this.callback) {
@@ -118,6 +144,7 @@ export default {
 <style scoped>
 form {
   border: 1px solid #111;
+  background-color: #E6EDE2;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;

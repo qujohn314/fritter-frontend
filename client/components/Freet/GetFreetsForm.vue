@@ -18,7 +18,6 @@ export default {
         if (!r.ok) {
           throw new Error(res.error);
         }
-
         this.$store.commit('updateFilter', this.value);
         this.$store.commit('updateFreets', res);
       } catch (e) {
@@ -28,6 +27,8 @@ export default {
           this.$store.commit('updateFilter', null);
           this.value = ''; // Clear filter to show all users' freets
           this.$store.commit('refreshFreets');
+          this.$store.commit('refreshReactions');
+          this.$store.commit('refreshComments');
         } else {
           // Otherwise reset to previous fitler
           this.value = this.$store.state.filter;
@@ -36,7 +37,42 @@ export default {
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
+
+      const reactionUrl = '/api/reactions'
+      try {
+        const r = await fetch(reactionUrl);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        this.$store.commit('updateReactions', res);
+        this.$store.commit('refreshReactions', res);
+      } catch (e) {
+          this.$store.commit('refreshReactions');
+      
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+
+      const commentUrl = '/api/comments'
+      try {
+        const r = await fetch(commentUrl);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+        this.$store.commit('updateComments', res);
+        this.$store.commit('refreshComments', res);
+      } catch (e) {
+          this.$store.commit('refreshComments');
+      
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
     }
+    
   }
 };
 </script>

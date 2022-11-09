@@ -105,9 +105,18 @@ class ReactionCollection {
    *
    * @param {string} authorId - The id of author of reactions
    */
-  static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
+  static async deleteManyUser(authorId: Types.ObjectId | string): Promise<void> {
     await ReactionModel.deleteMany({authorId});
   }
+
+   /**
+   * Delete all the reactions by the given author
+   *
+   * @param {string} authorId - The id of author of reactions
+   */
+    static async deleteManyItem(itemId: Types.ObjectId | string): Promise<void> {
+      await ReactionModel.deleteMany({itemId});
+    }
 
   /**
    * Update a reaction with a new reactionType

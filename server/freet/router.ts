@@ -4,6 +4,8 @@ import FreetCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
+import CommentCollection from '../comment/collection';
+import ReactionCollection from '../reaction/collection';
 
 const router = express.Router();
 
@@ -95,40 +97,13 @@ router.delete(
   ],
   async (req: Request, res: Response) => {
     await FreetCollection.deleteOne(req.params.freetId);
+    await CommentCollection.deleteManyFreet(req.params.freetId);
+    await ReactionCollection.deleteManyItem(req.params.freetId);
     res.status(200).json({
       message: 'Your freet was deleted successfully.'
     });
   }
 );
 
-/**
- * Modify a freet
- *
- * @name PATCH /api/freets/:id
- *
- * @param {string} content - the new content for the freet
- * @return {FreetResponse} - the updated freet
- * @throws {403} - if the user is not logged in or not the author of
- *                 of the freet
- * @throws {404} - If the freetId is not valid
- * @throws {400} - If the freet content is empty or a stream of empty spaces
- * @throws {413} - If the freet content is more than 140 characters long
- */
-router.patch(
-  '/:freetId?',
-  [
-    userValidator.isUserLoggedIn,
-    freetValidator.isFreetExists,
-    freetValidator.isValidFreetModifier,
-    freetValidator.isValidFreetContent
-  ],
-  async (req: Request, res: Response) => {
-    const freet = await FreetCollection.updateOne(req.params.freetId, req.body.content);
-    res.status(200).json({
-      message: 'Your freet was updated successfully.',
-      freet: util.constructFreetResponse(freet)
-    });
-  }
-);
 
 export {router as freetRouter};

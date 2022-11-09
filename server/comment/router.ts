@@ -5,6 +5,7 @@ import * as userValidator from '../user/middleware';
 import * as commentValidator from '../comment/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
+import ReactionCollection from '../reaction/collection';
 
 
 const router = express.Router();
@@ -142,6 +143,7 @@ export {router as commentRouter};
   ],
   async (req: Request, res: Response) => {
     await CommentCollection.deleteOne(req.params.commentId);
+    await ReactionCollection.deleteManyFromItem(req.params.commentId);
     res.status(200).json({
       message: 'Your comment was deleted successfully.'
     });

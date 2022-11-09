@@ -19,6 +19,9 @@ export default {
         this.$store.commit('alert', {
           message: 'You are now signed out!', status: 'success'
         });
+        this.$store.commit('setSilentMode',false);
+        this.$store.commit('setSilentComments',false);
+        this.$store.commit('setSilentReactions',false);
       }
     };
   }

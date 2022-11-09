@@ -133,7 +133,6 @@ router.get(
       const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
       const freetId = (req.body.itemId as string) ?? '';
 
-      print()
       const reaction = await ReactionCollection.addOne(userId, itemType,freetId, reactionType); 
   
       res.status(201).json({

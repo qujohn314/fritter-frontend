@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <header>
+    <header class="page">
       <NavBar />
     </header>
-    <router-view />
+    <router-view class="page"/>
   </div>
 </template>
 
@@ -40,6 +40,7 @@ body {
   padding: 0;
   margin: 0;
   font-size: 1.2em;
+  background-color: #A4B69B;
 }
 
 main {

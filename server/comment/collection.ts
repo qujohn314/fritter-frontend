@@ -87,9 +87,18 @@ class CommentCollection {
    *
    * @param {string} authorId - The id of author of comments
    */
-   static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
+   static async deleteManyUser(authorId: Types.ObjectId | string): Promise<void> {
     await CommentModel.deleteMany({authorId});
   }
+
+   /**
+   * Delete all the comments by the given parent freet Id
+   *
+   * @param {string} authorId - The id of author of comments
+   */
+    static async deleteManyFreet(parentFreetId: Types.ObjectId | string): Promise<void> {
+      await CommentModel.deleteMany({parentFreetId});
+    }
 }
 
 

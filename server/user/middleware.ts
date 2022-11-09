@@ -126,17 +126,18 @@ const isUserLoggedOut = (req: Request, res: Response, next: NextFunction) => {
  * Checks if a user with userId as author id in req.query exists
  */
 const isAuthorExists = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.query.author) {
+  let author = req.query.author ? req.query.author : req.query.ownerId;
+  if (!author) {
     res.status(400).json({
       error: 'Provided author username must be nonempty.'
     });
     return;
   }
 
-  const user = await UserCollection.findOneByUsername(req.query.author as string);
+  const user = await UserCollection.findOneByUsername(author as string);
   if (!user) {
     res.status(404).json({
-      error: `A user with username ${req.query.author as string} does not exist.`
+      error: `A user with username ${author as string} does not exist.`
     });
     return;
   }

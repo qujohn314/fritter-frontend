@@ -14,12 +14,16 @@
       <router-link to="/">
         Home
       </router-link>
+      <div v-if="$store.state.username">
       <router-link
-        v-if="$store.state.username"
-        to="/account"
-      >
+        to="/account">
         Account
       </router-link>
+      <router-link
+        to="/stream">
+        Stream
+      </router-link>
+      </div>
       <router-link
         v-else
         to="/login"

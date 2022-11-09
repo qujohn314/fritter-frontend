@@ -132,7 +132,9 @@ const isFreetInStream = async (req: Request, res: Response, next: NextFunction) 
     const streamId  = await StreamCollection.findOneByOwner(user);
   
   const stream = await StreamCollection.findOne(streamId._id);
-  const freet = await FreetCollection.findOne(req.body.freetId);
+  const freetId = req.body.freetId ? req.body.freetId : req.params.freetId;
+  const freet = await FreetCollection.findOne(freetId);
+
   if(!stream.capturedFreets.id(freet._id)){
     res.status(404).json({
       error: {
@@ -195,7 +197,9 @@ const isFreetInStream = async (req: Request, res: Response, next: NextFunction) 
   const streamId  = await StreamCollection.findOneByOwner(user);
 
   const stream = await StreamCollection.findOne(streamId._id);
-  const freet = await FreetCollection.findOne(req.body.freetId);
+
+  const freetId = req.body.freetId ? req.body.freetId : req.params.freetId;
+  const freet = await FreetCollection.findOne(freetId);
 
   if(freet.authorId._id == req.session.userId){
     res.status(409).json({

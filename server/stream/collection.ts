@@ -69,7 +69,7 @@ class StreamCollection {
 
    static async moveOneFreetToStream(streamId: Types.ObjectId | string, freetId: Types.ObjectId | string): Promise<HydratedDocument<Stream>> {
     const stream = await StreamModel.findOne({_id: streamId});
-    const freet = await FreetModel.findOne({_id: freetId});
+    const freet = await FreetModel.findOne({_id: freetId}).populate('authorId');
     
     stream.capturedFreets.remove(freet);
     stream.streamFreets.push(freet);
@@ -115,6 +115,17 @@ class StreamCollection {
    */
    static async findOneByOwner(userId: Types.ObjectId | string): Promise<HydratedDocument<Stream>> {
     return StreamModel.findOne({ownerId: userId}).populate('ownerId');
+  }
+
+  /**
+   * Delete a freet with given freetId.
+   *
+   * @param {string} freetId - The freetId of freet to delete
+   * @return {Promise<Boolean>} - true if the freet has been deleted, false otherwise
+   */
+   static async deleteOne(owner: Types.ObjectId | string): Promise<boolean> {
+    const stream = await FreetModel.deleteOne({ownerId: owner});
+    return stream !== null;
   }
 }
 

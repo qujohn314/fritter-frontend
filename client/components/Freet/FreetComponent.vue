@@ -6,72 +6,80 @@
     class="freet"
   >
     <header>
-      <h3 class="author">
+      <h3 class="author" v-if="freet.author">
         @{{ freet.author }}
       </h3>
+      <h3 class="author" v-else>
+        @{{ author }}
+      </h3>
+      <div
+        v-if="$store.state.silentReactions == false"
+        >
+      <div class="big-reaction-box" v-if="bigReaction !== ''">
+        <figure class="big-reaction">{{bigReaction}}</figure>
+      </div>
+      </div>
       <div
         v-if="$store.state.username === freet.author"
         class="actions"
       >
-        <button
-          v-if="editing"
-          @click="submitEdit"
-        >
-          ✅ Save changes
-        </button>
-        <button
-          v-if="editing"
-          @click="stopEditing"
-        >
-          🚫 Discard changes
-        </button>
-        <button
-          v-if="!editing"
-          @click="startEditing"
-        >
-          ✏️ Edit
-        </button>
         <button @click="deleteFreet">
           🗑️ Delete
         </button>
       </div>
     </header>
-    <textarea
-      v-if="editing"
-      class="content"
-      :value="draft"
-      @input="draft = $event.target.value"
-    />
     <p
-      v-else
       class="content"
     >
-      {{ freet.content }}
+      "{{ freet.content }}"
     </p>
+    <div v-if="inStream">
+      <button @click="captureFreet">📌 Capture</button>
+    </div>
+    <div v-if="captured">
+      <button @click="releaseFreet">❌ Release</button>
+    </div>
+    <div v-if="inStream">
+      <button @click="removeFreet">🎲 Replace</button>
+    </div>
     <p class="info">
       Posted at {{ freet.dateModified }}
-      <i v-if="freet.edited">(edited)</i>
     </p>
 
-    <button>
-      👍
-    </button>
-    <button>
-      👎
-    </button>
-    <button>
-      😮
-    </button>
-    <button>
-      ❤️
-    </button>
-    <button>
-      😢
-    </button>
-    <button>
-      😡
-    </button>
-  
+    <div
+        v-if="$store.state.silentReactions == false"
+        >
+    <ReactionComponent
+      :itemType="'Freet'"
+      :item="freet"
+      :reactions="freetReactions"
+    />
+  </div>
+  <section v-if="$store.state.silentReactions">
+    <footer>~Disable Silent Mode to View Reactions~</footer>
+  </section>
+    <section
+        v-if="$store.state.comments.length && freetComments && freet && $store.state.silentComments == false"
+      >
+        <div
+        v-if="$store.state.username"
+        >
+          <CreateCommentForm
+            :parentFreetId="freet._id"
+          />
+        </div>
+        <CommentComponent
+          v-for="commentSingle in freetComments"
+          :key="commentSingle.id"
+          :parentFreetInstance="freet"
+          :comment="commentSingle"
+        />
+
+      </section>
+    <section v-else>
+        <footer>~Disable Silent Mode to View Comments~</footer>
+    </section>
+
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -85,36 +93,85 @@
 </template>
 
 <script>
+import ReactionComponent from '@/components/Reaction/ReactionComponent.vue';
+import CommentComponent from '@/components/Comment/CommentComponent.vue';
+import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
+
 export default {
   name: 'FreetComponent',
+  components: {ReactionComponent, CommentComponent,CreateCommentForm},
   props: {
     // Data from the stored freet
     freet: {
       type: Object,
       required: true
+    },
+    inStream:{
+      type: Boolean,
+      required: false
+    },
+    captured:{
+      type: Boolean,
+      required: false
     }
   },
   data() {
     return {
-      editing: false, // Whether or not this freet is in edit mode
       draft: this.freet.content, // Potentially-new content for this freet
-      alerts: {} // Displays success/error messages encountered during freet modification
+      alerts: {}, // Displays success/error messages encountered during freet modification
+      author: this.freet.authorId
     };
   },
+  computed: {
+      freetComments() {
+        const value = this.$store.getters.freetComments(this.freet) ? this.$store.getters.freetComments(this.freet) : [];
+        return value
+      },
+      freetReactions() {
+        return this.$store.getters.itemReactions(this.freet);
+      },
+      bigReaction(){
+        const reactions = this.$store.getters.itemReactions(this.freet);
+        if(reactions){
+
+          const reactionCount = [0,0,0,0,0,0,0];
+          const reactionIndex = {"Like":0,"Dislike":1,"Wow":2,"Love":3,"Sad":4,"Angry":5,"None":6};
+          const reactionTypes = ['👍','👎','😮','❤️','😢','😡',''];
+          let biggestReaction = "None";
+
+          for(const reaction of reactions){
+              reactionCount[reactionIndex[reaction.reactionType]] += 1;
+              if(reactionCount[reactionIndex[reaction.reactionType]] > reactionCount[reactionIndex[biggestReaction]]){
+                biggestReaction = reaction.reactionType;
+              }
+          }
+          return reactionTypes[reactionIndex[biggestReaction]];
+        }
+        return "";
+      }
+  },
   methods: {
-    startEditing() {
-      /**
-       * Enables edit mode on this freet.
-       */
-      this.editing = true; // Keeps track of if a freet is being edited
-      this.draft = this.freet.content; // The content of our current "draft" while being edited
+    removeFreet() {
+      this.$emit("remove-freet",{freet: this.freet});
     },
-    stopEditing() {
-      /**
-       * Disables edit mode on this freet.
-       */
-      this.editing = false;
-      this.draft = this.freet.content;
+    async getAuthor(){
+        const author = this.freet.authorId;
+        console.log("Getting author");
+  
+        try {
+          const r = await fetch(`/api/users/userId/?userId=${author}`).then(async r => r.json());
+          this.author = r.user.username;
+
+        } catch (e) {
+          this.$set(this.alerts, e, 'error');
+          setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }
+    },
+    captureFreet(){
+      this.$emit("capture-freet",{freet: this.freet});
+    },
+    releaseFreet(){
+      this.$emit("release-freet",{freet: this.freet});
     },
     deleteFreet() {
       /**
@@ -126,28 +183,6 @@ export default {
           this.$store.commit('alert', {
             message: 'Successfully deleted freet!', status: 'success'
           });
-        }
-      };
-      this.request(params);
-    },
-    submitEdit() {
-      /**
-       * Updates freet to have the submitted draft content.
-       */
-      if (this.freet.content === this.draft) {
-        const error = 'Error: Edited freet content should be different than current freet content.';
-        this.$set(this.alerts, error, 'error'); // Set an alert to be the error text, timeout of 3000 ms
-        setTimeout(() => this.$delete(this.alerts, error), 3000);
-        return;
-      }
-
-      const params = {
-        method: 'PATCH',
-        message: 'Successfully edited freet!',
-        body: JSON.stringify({content: this.draft}),
-        callback: () => {
-          this.$set(this.alerts, params.message, 'success');
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
         }
       };
       this.request(params);
@@ -173,7 +208,6 @@ export default {
           throw new Error(res.error);
         }
 
-        this.editing = false;
         this.$store.commit('refreshFreets');
 
         params.callback();
@@ -182,14 +216,36 @@ export default {
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
     }
+  },
+  mounted() {
+    this.getAuthor();
   }
 };
 </script>
 
 <style scoped>
 .freet {
-    border: 1px solid #111;
+    border: 1px solid #264027;
     padding: 20px;
     position: relative;
+    background-color: #F9FAF7;
+}
+
+.reaction {
+  position:relative;
+  right: -0.5em;
+  top: 1.2em;
+}
+.big-reaction {
+  font-size: 3.6em;
+  position:relative;
+  right: 0;
+  top: -0.5em;
+}
+
+.big-reaction-box {
+  position:absolute;
+  right: 3%;
+  top: 0%;
 }
 </style>

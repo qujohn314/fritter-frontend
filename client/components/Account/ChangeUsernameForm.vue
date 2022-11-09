@@ -12,6 +12,7 @@ export default {
       method: 'PATCH',
       hasBody: true,
       setUsername: true,
+      setSilentSettings: true,
       fields: [
         {id: 'username', label: 'Username', value: ''}
       ],

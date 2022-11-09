@@ -5,12 +5,32 @@ import FreetCollection from '../freet/collection';
 /**
  * Checks if a freet with freetId is req.params exists
  */
-const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.freetId);
-  const freet = validFormat ? await FreetCollection.findOne(req.params.freetId) : '';
+ const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
+  let freetId = req.params.freetId ? req.params.freetId : String(req.query.freetId)
+
+  if(freetId == undefined || freetId == "undefined"){
+    freetId = req.body.itemId ? String(req.body.itemId) : String(req.query.itemId);
+    if(freetId == undefined || freetId == "undefined"){
+      freetId = req.body.freetId;
+    }
+  }
+
+  if (!freetId || freetId == 'undefined' || freetId == 'capture' || freetId == 'release') {
+    res.status(400).json({
+      error: 'Provided freetId must be nonempty.'
+    });
+    return;
+  }
+
+  let validFormat = Types.ObjectId.isValid(freetId);
+  const freet = validFormat ? await FreetCollection.findOne(freetId) : '';
+
+  
   if (!freet) {
     res.status(404).json({
-      error: `Freet with freet ID ${req.params.freetId} does not exist.`
+      error: {
+        freetNotFound: `Freet with freet ID ${freetId} does not exist.`
+      }
     });
     return;
   }
